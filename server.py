@@ -20,8 +20,9 @@ SCORE_API = 'api/v1/users/'
 @app.route('/api/v1/auth/', methods=['POST'])
 def auth():
 	data = {}
+	json1 = flask.request.get_json()
 	for data_name in DATA_LIST:
-		data[data_name] = flask.request.args.get(data_name)
+		data[data_name] = json1.get(data_name)
 	if data['id']:
 		# TODO: make validation
 		
@@ -31,10 +32,10 @@ def auth():
 		chat_id = flask.session['data']['chat_id']
 		name = flask.session['data']['first_name'] + ' ' + flask.session['data']['last_name']
 
-		resp = requests.post(API+SCORE_API, {'game_id': GAME_ID, 'telegram_id': telegram_id, 'chat_id': chat_id, 'name': name})
+		resp = requests.post(API+SCORE_API, json={'game_id': GAME_ID, 'telegram_id': telegram_id, 'chat_id': chat_id, 'name': name})
 		return resp.content
 	else:
-		return 400
+		return str(400)
 
 	
 
