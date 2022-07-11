@@ -15,7 +15,6 @@ DATA_LIST = [
     'chat_id'
 ]
 API = 'https://api.tinkoffgame.ml/'
-VALIDATE_API = ''
 SCORE_API = 'api/v1/users/'
 
 @app.route('/api/v1/auth/', methods=['POST'])
@@ -25,7 +24,17 @@ def auth():
 		data[data_name] = flask.request.args.get(data_name)
 	if data['id']:
 		# TODO: make validation
+		
 		flask.session['data'] = data
+
+		telegram_id = flask.session['data']['id']
+		chat_id = flask.session['data']['chat_id']
+		name = flask.session['data']['first_name'] + ' ' + flask.session['data']['last_name']
+
+		resp = requests.post(API+SCORE_API, {'game_id': GAME_ID, 'telegram_id': telegram_id, 'chat_id': chat_id, 'name': name})
+		return resp.content
+	else:
+		return 400
 
 	
 
@@ -65,4 +74,4 @@ def users():
 if __name__ == '__main__':
     print('Hello!')
     app.secret_key = secrets.secret_key
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=5500)
