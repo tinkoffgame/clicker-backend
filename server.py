@@ -42,7 +42,7 @@ def auth():
 @app.route('/api/v1/users/', methods=['GET','POST','PUT'])
 def users():
 	if flask.request.method == 'PUT':
-		score = flask.request.form.get('score')
+		score = flask.request.get_json().get('score')
 		telegram_id = flask.session['data']['id']
 
 		# telegram_id = flask.request.form.get('telegram_id')
