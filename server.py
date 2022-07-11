@@ -1,5 +1,6 @@
 import flask
 import requests
+import secrets
 
 app = flask.Flask(__name__)
 GAME_ID = 0
@@ -17,7 +18,7 @@ API = 'https://api.tinkoffgame.ml/'
 VALIDATE_API = ''
 SCORE_API = 'api/v1/users/'
 
-@app.route('api/v1/auth/', methods=['POST'])
+@app.route('/api/v1/auth/', methods=['POST'])
 def auth():
 	data = {}
 	for data_name in DATA_LIST:
@@ -28,7 +29,7 @@ def auth():
 
 	
 
-@app.route('api/v1/users/', methods=['GET','POST','PUT'])
+@app.route('/api/v1/users/', methods=['GET','POST','PUT'])
 def users():
 	if flask.request.method == 'PUT':
 		score = flask.request.form.get('score')
@@ -63,6 +64,5 @@ def users():
 
 if __name__ == '__main__':
     print('Hello!')
-    # TODO: make secret key secret
-    app.secret_key = 'asdfghjklqwertyuiopzxcvbnm'
-    app.run()
+    app.secret_key = secrets.secret_key
+    app.run(host='0.0.0.0')
