@@ -1,9 +1,10 @@
+from crypt import methods
 import flask
 import requests
-import secrets
+import secrets2
 
 app = flask.Flask(__name__)
-GAME_ID = 0
+GAME_ID = 1
 DATA_LIST = [
     'id',
     'first_name',
@@ -14,28 +15,36 @@ DATA_LIST = [
     'hash',
     'chat_id'
 ]
-API = 'https://api.tinkoffgame.ml/'
+# API = 'https://api.tinkoffgame.ml/'
+API = 'http://906f-188-170-214-41.ngrok.io/'
 SCORE_API = 'api/v1/users/'
+
+
+@app.route("/index", methods= ['POST', 'GET'])
+def index():
+	return "hello"
 
 @app.route('/api/v1/auth/', methods=['POST'])
 def auth():
 	data = {}
 	json1 = flask.request.get_json()
-	for data_name in DATA_LIST:
-		data[data_name] = json1.get(data_name)
-	if data['id']:
-		# TODO: make validation
+	# print(json1)
+	# for data_name in DATA_LIST:
+	# 	data[data_name] = json1.get(data_name)
+	# if data['id']:
+	# 	# TODO: make validation
 		
-		flask.session['data'] = data
+	# 	flask.session['data'] = data
 
-		telegram_id = flask.session['data']['id']
-		chat_id = flask.session['data']['chat_id']
-		name = flask.session['data']['first_name'] + ' ' + flask.session['data']['last_name']
+	# 	telegram_id = flask.session['data']['id']
+	# 	chat_id = flask.session['data']['chat_id']
+	# 	name = flask.session['data']['first_name'] + ' ' + flask.session['data']['last_name']
 
-		resp = requests.post(API+SCORE_API, json={'game_id': GAME_ID, 'telegram_id': telegram_id, 'chat_id': chat_id, 'name': name})
-		return resp.content
-	else:
-		return str(400)
+	# 	resp = requests.post(API+SCORE_API, json={'game_id': GAME_ID, 'telegram_id': telegram_id, 'chat_id': chat_id, 'name': name})
+	# 	return resp.content
+	# else:
+	# 	return str(400)
+	return str(200)
 
 	
 
@@ -46,7 +55,7 @@ def users():
 		telegram_id = flask.session['data']['id']
 
 		# telegram_id = flask.request.form.get('telegram_id')
-
+		print(score, telegram_id)
 		resp = requests.put(API+SCORE_API, json={'game_id': GAME_ID, 'telegram_id': telegram_id, 'score': score})
 		return resp.content
 
@@ -74,5 +83,5 @@ def users():
 
 if __name__ == '__main__':
     print('Hello!')
-    app.secret_key = secrets.secret_key
-    app.run(host='0.0.0.0', port=5500)
+    app.secret_key = secrets2.secret_key
+    app.run(host='0.0.0.0', port=5500, debug=True)
