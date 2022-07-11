@@ -4,7 +4,7 @@ from fastapi import FastAPI, Response, Cookie
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-API = "http://localhost:5000"
+API = "http://7d84-85-174-197-40.ngrok.io"
 GAME_ID = 1
 SCORE_API = "/api/v1/users"
 app = FastAPI()
@@ -29,7 +29,7 @@ class AuthBase(BaseModel):
     chat_id: str
 
 
-@app.post("api/v1/auth/")
+@app.post("/api/v1/auth")
 async def authorization(model_in: AuthBase, response: Response):
     for key, val in model_in.dict().items():
         response.set_cookie(key=str(key.encode('utf_8')),
@@ -46,7 +46,7 @@ async def authorization(model_in: AuthBase, response: Response):
 
 @app.put("/api/v1/users/")
 def update_user(score: int,
-                telegram_id: Cookie(None)):
+                telegram_id=Cookie(None)):
     resp_json = requests.put(API + SCORE_API, json={'game_id': GAME_ID,
                                                     'telegram_id': telegram_id,
                                                     'score': score}).json()
@@ -55,10 +55,10 @@ def update_user(score: int,
 
 
 @app.post("/api/v1/users/")
-def create_user(chat_id: Cookie(None),
-                telegram_id: Cookie(None),
-                first_name: Cookie(None),
-                last_name: Cookie(None)):
+def create_user(chat_id=Cookie(None),
+                telegram_id=Cookie(None),
+                first_name=Cookie(None),
+                last_name=Cookie(None)):
     name = f"{first_name} {last_name}"
     resp_json = requests.post(API + SCORE_API, json={'game_id': GAME_ID,
                                                      'telegram_id': telegram_id,
@@ -69,8 +69,8 @@ def create_user(chat_id: Cookie(None),
 
 
 @app.get('/api/v1/users/')
-def get_user(telegram_id: Cookie(None),
-             chat_id: Cookie(None)):
+def get_user(telegram_id=Cookie(None),
+             chat_id=Cookie(None)):
     resp_json = requests.get(API + SCORE_API, params={'game_id': GAME_ID,
                                                       'telegram_id': telegram_id,
                                                       'chat_id': chat_id}).json()
