@@ -46,7 +46,7 @@ def users():
 
 		# telegram_id = flask.request.form.get('telegram_id')
 
-		resp = requests.put(API+SCORE_API, {'game_id': GAME_ID, 'telegram_id': telegram_id, 'score': score})
+		resp = requests.put(API+SCORE_API, json={'game_id': GAME_ID, 'telegram_id': telegram_id, 'score': score})
 		return resp.content
 
 	if flask.request.method == 'POST':
@@ -58,7 +58,7 @@ def users():
 		# chat_id = flask.request.form.get('chat_id')
 		# first_name = flask.request.form.get('first_name') + ' ' + flask.request.form.get('last_name')
 		
-		resp = requests.post(API+SCORE_API, {'game_id': GAME_ID, 'telegram_id': telegram_id, 'chat_id': chat_id, 'name': name})
+		resp = requests.post(API+SCORE_API, json={'game_id': GAME_ID, 'telegram_id': telegram_id, 'chat_id': chat_id, 'name': name})
 		return resp.content
 
 	if flask.request.method == 'GET':
@@ -67,7 +67,7 @@ def users():
 		# telegram_id = flask.request.form.get('telegram_id')
 		# chat_id = flask.request.form.get('chat_id')
 
-		resp = requests.get(API+SCORE_API, {'game_id': GAME_ID, 'telegram_id': telegram_id, 'chat_id': chat_id})
+		resp = requests.get(API+SCORE_API, params={'game_id': GAME_ID, 'telegram_id': telegram_id, 'chat_id': chat_id})
 		return resp.content
 
 
