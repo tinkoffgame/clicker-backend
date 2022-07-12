@@ -4,7 +4,7 @@ from fastapi import FastAPI, Response, Cookie
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-API = "http://7d84-85-174-197-40.ngrok.io"
+API = "http://7885-188-170-214-41.ngrok.io"
 GAME_ID = 1
 SCORE_API = "/api/v1/users"
 app = FastAPI()
@@ -22,19 +22,11 @@ class AuthBase(BaseModel):
     telegram_id: str
     first_name: str
     last_name: str
-    username: str
-    photo_url: str
-    auth_date: str
-    hash: str
     chat_id: str
 
 
 @app.post("/api/v1/auth")
-async def authorization(model_in: AuthBase, response: Response):
-    for key, val in model_in.dict().items():
-        response.set_cookie(key=str(key.encode('utf_8')),
-                            value=str(val.encode('utf_8')),
-                            httponly=True)
+async def authorization(model_in: AuthBase):
     name = model_in.first_name + ' ' + model_in.last_name
     resp = requests.post(API + SCORE_API, json={'game_id': GAME_ID,
                                                 'telegram_id': model_in.telegram_id,
@@ -44,36 +36,41 @@ async def authorization(model_in: AuthBase, response: Response):
     return resp
 
 
-@app.put("/api/v1/users/")
-def update_user(score: int,
-                telegram_id=Cookie(None)):
+class UpdateUser(BaseModel):
+    score: str
+    telegram_id: str
+
+
+@app.put("/api/v1/users")
+def update_user(model_in: UpdateUser):
     resp_json = requests.put(API + SCORE_API, json={'game_id': GAME_ID,
-                                                    'telegram_id': telegram_id,
-                                                    'score': score}).json()
+                                                    'telegram_id': model_in.telegram_id,
+                                                    'score': int(model_in.score)}).json()
     print(resp_json)
     return resp_json
 
 
-@app.post("/api/v1/users/")
-def create_user(chat_id=Cookie(None),
-                telegram_id=Cookie(None),
-                first_name=Cookie(None),
-                last_name=Cookie(None)):
-    name = f"{first_name} {last_name}"
+@app.post("/api/v1/users")
+def create_user(model_in: AuthBase):
+    name = f"{model_in.first_name} {model_in.last_name}"
     resp_json = requests.post(API + SCORE_API, json={'game_id': GAME_ID,
-                                                     'telegram_id': telegram_id,
-                                                     'chat_id': chat_id,
+                                                     'telegram_id': model_in.telegram_id,
+                                                     'chat_id': model_in.chat_id,
                                                      'name': name}).json()
     print(resp_json)
     return resp_json
 
 
-@app.get('/api/v1/users/')
-def get_user(telegram_id=Cookie(None),
-             chat_id=Cookie(None)):
+class GetUser(BaseModel):
+    telegram_id: str
+    chat_id: str
+
+
+@app.get('/api/v1/users')
+def get_user(model_in: GetUser):
     resp_json = requests.get(API + SCORE_API, params={'game_id': GAME_ID,
-                                                      'telegram_id': telegram_id,
-                                                      'chat_id': chat_id}).json()
+                                                      'telegram_id': model_in.telegram_id,
+                                                      'chat_id': model_in.chat_id}).json()
     return resp_json
 
 
