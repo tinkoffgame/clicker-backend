@@ -4,7 +4,7 @@ from fastapi import FastAPI, Response, Cookie
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-API = "http://7885-188-170-214-41.ngrok.io"
+API = "https://api.tinkoffgame.ml"
 GAME_ID = 1
 SCORE_API = "/api/v1/users"
 app = FastAPI()
