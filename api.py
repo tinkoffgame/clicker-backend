@@ -60,6 +60,8 @@ def update_user(model_in: UpdateTable):
 
 @app.put("/api/v1/users")
 def update_user(model_in: UpdateTable):
+    print(score)
+    print(model_in.telegram_id)
     resp_json = requests.put(API + SCORE_API,
                              json={'game_id': GAME_ID,
                                    'telegram_id': model_in.telegram_id,
