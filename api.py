@@ -44,7 +44,7 @@ async def authorization(model_in: AuthBase):
                                          'chat_id': model_in.chat_id,
                                          'name': name})
     score[model_in.telegram_id] = 0
-    resp_json = requests.get(API + SCORE_API, params={
+    resp_json = requests.get(API + TABLE_API, params={
         "game_id": GAME_ID,
         "chat_id": model_in.chat_id
     }).json()
