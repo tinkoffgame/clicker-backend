@@ -7,6 +7,7 @@ from pydantic import BaseModel
 API = "https://api.tinkoffgame.ml"
 GAME_ID = 1
 SCORE_API = "/api/v1/users"
+TABLE_API = "/api/v1/table"
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -38,12 +39,15 @@ class AuthBase(BaseModel):
 @app.post("/api/v1/auth")
 async def authorization(model_in: AuthBase):
     name = f"{model_in.first_name} {model_in.last_name}"
-    resp_json = requests.post(API + SCORE_API,
-                              json={'game_id': GAME_ID,
-                                    'telegram_id': model_in.telegram_id,
-                                    'chat_id': model_in.chat_id,
-                                    'name': name}).json()
+    requests.post(API + SCORE_API, json={'game_id': GAME_ID,
+                                         'telegram_id': model_in.telegram_id,
+                                         'chat_id': model_in.chat_id,
+                                         'name': name})
     score[model_in.telegram_id] = 0
+    resp_json = requests.get(API + SCORE_API, params={
+        "game_id": GAME_ID,
+        "chat_id": model_in.chat_id
+    }).json()
     return resp_json
 
 
