@@ -66,14 +66,16 @@ def update_user(model_in: UpdateTable):
 def update_user(model_in: UpdateTable):
     print(score)
     print(model_in.telegram_id)
-    resp_json = requests.put(API + SCORE_API,
-                             json={'game_id': GAME_ID,
-                                   'telegram_id': model_in.telegram_id,
-                                   'score': int(
-                                       score[
-                                           int(model_in.telegram_id)])}).json()
-    score.pop(int(model_in.telegram_id), None)
-    return resp_json
+    if model_in.score < 60:
+        score[int(model_in.score)] += model_in.score
+        resp_json = requests.put(API + SCORE_API,
+                                 json={'game_id': GAME_ID,
+                                       'telegram_id': model_in.telegram_id,
+                                       'score': int(
+                                           score[
+                                               int(model_in.telegram_id)])}).json()
+        score.pop(int(model_in.telegram_id), None)
+        return resp_json
 
 
 if __name__ == "__main__":
