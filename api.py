@@ -59,10 +59,10 @@ async def authorization(model_in: AuthBase):
 
 @app.put("/api/v1/score")
 def update_user(model_in: UpdateTable):
-    print(score)
-    print(model_in.telegram_id)
     if model_in.score <= 60:
         score[model_in.telegram_id] += model_in.score
+        print(score)
+        print(model_in.telegram_id)
     return {"score_now": score[model_in.telegram_id]}
 
 
