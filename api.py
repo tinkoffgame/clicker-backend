@@ -1,6 +1,6 @@
 import requests
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -41,7 +41,9 @@ class AuthBase(BaseModel):
 
 
 @app.post("/api/v1/auth")
-async def authorization(model_in: AuthBase):
+async def authorization(model_in: AuthBase, telegram_id: int):
+    if model_in.telegram_id != telegram_id:
+        raise HTTPException(status_code=401)
     name = f"{model_in.first_name} {model_in.last_name}"
     requests.post(API + SCORE_API, json={'game_id': GAME_ID,
                                          'telegram_id': model_in.telegram_id,
@@ -58,7 +60,9 @@ async def authorization(model_in: AuthBase):
 
 
 @app.put("/api/v1/score")
-def update_user(model_in: UpdateTable):
+def update_user(model_in: UpdateTable, telegram_id: int):
+    if model_in.telegram_id != telegram_id:
+        raise HTTPException(status_code=401)
     if model_in.score <= 60:
         score[model_in.telegram_id] += model_in.score
         print(score)
@@ -67,7 +71,9 @@ def update_user(model_in: UpdateTable):
 
 
 @app.put("/api/v1/users")
-def update_user(model_in: UpdateUser):
+def update_user(model_in: UpdateUser, telegram_id: int):
+    if model_in.telegram_id != telegram_id:
+        raise HTTPException(status_code=401)
     print(score)
     print(model_in.telegram_id)
     t = score[model_in.telegram_id]
