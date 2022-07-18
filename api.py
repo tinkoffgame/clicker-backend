@@ -70,12 +70,12 @@ def update_user(model_in: UpdateTable):
 def update_user(model_in: UpdateUser):
     print(score)
     print(model_in.telegram_id)
+    t = score[model_in.telegram_id]
     score.pop(model_in.telegram_id, None)
     resp_json = requests.put(API + SCORE_API,
                              json={'game_id': GAME_ID,
                                    'telegram_id': model_in.telegram_id,
-                                   'score': int(
-                                       score[model_in.telegram_id])}).json()
+                                   'score': int(t)}).json()
     return resp_json
 
 
