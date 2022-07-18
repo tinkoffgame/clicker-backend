@@ -44,6 +44,8 @@ async def authorization(model_in: AuthBase):
                                          'chat_id': model_in.chat_id,
                                          'name': name})
     score[int(model_in.telegram_id)] = 0
+    print(score)
+    print(model_in.telegram_id)
     resp_json = requests.get(API + TABLE_API, params={
         "game_id": GAME_ID,
         "chat_id": model_in.chat_id
@@ -53,6 +55,8 @@ async def authorization(model_in: AuthBase):
 
 @app.put("/api/v1/score")
 def update_user(model_in: UpdateTable):
+    print(score)
+    print(model_in.telegram_id)
     if model_in.score <= 60:
         score[int(model_in.telegram_id)] += model_in.score
     return {"score_now": score[int(model_in.telegram_id)]}
@@ -69,15 +73,6 @@ def update_user(model_in: UpdateTable):
                                        score[
                                            int(model_in.telegram_id)])}).json()
     score.pop(int(model_in.telegram_id), None)
-    return resp_json
-
-
-@app.get('/api/v1/users')
-def get_user(telegram_id: int, chat_id: int):
-    resp_json = requests.get(API + SCORE_API,
-                             params={'game_id': GAME_ID,
-                                     'telegram_id': telegram_id,
-                                     'chat_id': chat_id}).json()
     return resp_json
 
 
