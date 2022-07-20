@@ -24,13 +24,9 @@ class GetUser(BaseModel):
     chat_id: int
 
 
-class UpdateTable(BaseModel):
-    telegram_id: int
-    score: int
-
-
 class UpdateUser(BaseModel):
     telegram_id: int
+    score: int
 
 
 class AuthBase(BaseModel):
@@ -50,8 +46,6 @@ async def authorization(model_in: AuthBase, telegram_id: int):
                                          'chat_id': model_in.chat_id,
                                          'name': name})
     score[model_in.telegram_id] = 0
-    print(score)
-    print(model_in.telegram_id)
     resp_json = requests.get(API + TABLE_API, params={
         "game_id": GAME_ID,
         "chat_id": model_in.chat_id
@@ -60,13 +54,11 @@ async def authorization(model_in: AuthBase, telegram_id: int):
 
 
 @app.put("/api/v1/score")
-def update_user(model_in: UpdateTable, telegram_id: int):
+def update_user(model_in: UpdateUser, telegram_id: int):
     if model_in.telegram_id != telegram_id:
         raise HTTPException(status_code=401)
     if model_in.score <= 60:
         score[model_in.telegram_id] += model_in.score
-        print(score)
-        print(model_in.telegram_id)
     return {"score_now": score[model_in.telegram_id]}
 
 
@@ -74,15 +66,14 @@ def update_user(model_in: UpdateTable, telegram_id: int):
 def update_user(model_in: UpdateUser, telegram_id: int):
     if model_in.telegram_id != telegram_id:
         raise HTTPException(status_code=401)
-    print(score)
-    print(model_in.telegram_id)
-    t = score[model_in.telegram_id]
-    score.pop(model_in.telegram_id, None)
-    resp_json = requests.put(API + SCORE_API,
-                             json={'game_id': GAME_ID,
-                                   'telegram_id': model_in.telegram_id,
-                                   'score': int(t)}).json()
-    return resp_json
+    if model_in.score <= 60:
+        temp_score = score[model_in.telegram_id] + model_in.score
+        score.pop(model_in.telegram_id, None)
+        resp_json = requests.put(API + SCORE_API,
+                                 json={'game_id': GAME_ID,
+                                       'telegram_id': model_in.telegram_id,
+                                       'score': int(temp_score)}).json()
+        return resp_json
 
 
 if __name__ == "__main__":
